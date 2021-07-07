@@ -1,7 +1,8 @@
 from typing import List, Optional, Tuple, Dict
 import re
 from functools import lru_cache
-from action import ALL_ACTIONS
+from const.action import ALL_ACTIONS
+
 
 class FightingFeaturesExtractor:
     """
@@ -13,21 +14,21 @@ class FightingFeaturesExtractor:
 
     def __init__(self, features: List[str]):
         self.features = features
-        self.max_hp = None # type: Optional[Tuple[int, int]]
-        self.character_names = None # type: Optional[Tuple[str, str]]
-        self.stage_size = None # type: Optional[Dict[str, int]]
+        self.max_hp = None  # type: Optional[Tuple[int, int]]
+        self.character_names = None  # type: Optional[Tuple[str, str]]
+        self.stage_size = None  # type: Optional[Dict[str, int]]
         self.frame_data = None
-        self.discretize = True
+        self.discretize = False
 
     def set_game_data(self, game_data):
-        print(game_data)
         if isinstance(game_data, dict):
             self.max_hp = game_data['max_hp']
             self.character_names = game_data['character_names']
             self.stage_size = game_data['stage_size']
         else:
             # max_hp info not available in game_data - will grab it from the first frameData
-            self.character_names = {'P1': game_data.getPlayerOneCharacterName(), 'P2': game_data.getPlayerTwoCharacterName()}
+            self.character_names = {'P1': game_data.getPlayerOneCharacterName(),
+                                    'P2': game_data.getPlayerTwoCharacterName()}
             self.stage_size = {'x': game_data.getStageXMax(), 'y': game_data.getStageYMax()}
 
     @staticmethod
@@ -88,64 +89,109 @@ class FightingFeaturesExtractor:
 
     @staticmethod
     def get_player_field(pl_data, field):
-        if field == 'remaining_frames': return pl_data.getRemainingFrame()
-        if field == 'action': return pl_data.getAction().toString()
-        if field == 'action_id': return pl_data.getAction().ordinal()
-        if field == 'state': return pl_data.getAction().toString()
-        if field == 'state_id': return pl_data.getState().ordinal()
-        if field == 'hp': return pl_data.getHp()
-        if field == 'energy': return pl_data.getEnergy()
-        if field == 'x': return pl_data.getX()
-        if field == 'y': return pl_data.getY()
-        if field == 'speed_x': return pl_data.getSpeedX()
-        if field == 'speed_y': return pl_data.getSpeedY()
-        if field == 'left': return pl_data.getLeft()
-        if field == 'right': return pl_data.getRight()
-        if field == 'top': return pl_data.getTop()
-        if field == 'bottom': return pl_data.getBottom()
+        if field == 'front':
+            return pl_data.getFront()
+        if field == 'remaining_frames':
+            return pl_data.getRemainingFrame()
+        if field == 'action':
+            return pl_data.getAction().toString()
+        if field == 'action_id':
+            return pl_data.getAction().ordinal()
+        if field == 'state':
+            return pl_data.getAction().toString()
+        if field == 'state_id':
+            return pl_data.getState().ordinal()
+        if field == 'hp':
+            return pl_data.getHp()
+        if field == 'energy':
+            return pl_data.getEnergy()
+        if field == 'x':
+            return pl_data.getX()
+        if field == 'y':
+            return pl_data.getY()
+        if field == 'speed_x':
+            return pl_data.getSpeedX()
+        if field == 'speed_y':
+            return pl_data.getSpeedY()
+        if field == 'left':
+            return pl_data.getLeft()
+        if field == 'right':
+            return pl_data.getRight()
+        if field == 'top':
+            return pl_data.getTop()
+        if field == 'bottom':
+            return pl_data.getBottom()
         raise ValueError("Unknown player field: %s" % field)
 
     @staticmethod
     def get_attack_field(att_data, field):
-        if field == 'speed_x': return att_data.getSpeedX()
-        if field == 'speed_y': return att_data.getSpeedY()
-        if field == 'hit_damage': return att_data.getHitDamage()
-        if field == 'guard_damage': return att_data.getGuardDamage()
-        if field == 'start_add_energy': return att_data.getStartAddEnergy()
-        if field == 'hit_add_energy': return att_data.getHitAddEnergy()
-        if field == 'guard_add_energy': return att_data.getGuardAddEnergy()
-        if field == 'give_energy': return att_data.getGiveEnergy()
-        if field == 'give_guard_recov': return att_data.getGiveGuardRecov()
-        if field == 'attack_type': return {1: 'HIGH', 2: 'MIDDLE', 3: 'LOW', 4: 'THROW'}[att_data.getAttackType()]
-        if field == 'attack_type_id': return att_data.getAttackType()
-        if field == 'impact_x': return att_data.getImpactX()
-        if field == 'impact_y': return att_data.getImpactY()
+        if field == 'speed_x':
+            return att_data.getSpeedX()
+        if field == 'speed_y':
+            return att_data.getSpeedY()
+        if field == 'hit_damage':
+            return att_data.getHitDamage()
+        if field == 'guard_damage':
+            return att_data.getGuardDamage()
+        if field == 'start_add_energy':
+            return att_data.getStartAddEnergy()
+        if field == 'hit_add_energy':
+            return att_data.getHitAddEnergy()
+        if field == 'guard_add_energy':
+            return att_data.getGuardAddEnergy()
+        if field == 'give_energy':
+            return att_data.getGiveEnergy()
+        if field == 'give_guard_recov':
+            return att_data.getGiveGuardRecov()
+        if field == 'attack_type':
+            return {1: 'HIGH', 2: 'MIDDLE', 3: 'LOW', 4: 'THROW'}[att_data.getAttackType()]
+        if field == 'attack_type_id':
+            return att_data.getAttackType()
+        if field == 'impact_x':
+            return att_data.getImpactX()
+        if field == 'impact_y':
+            return att_data.getImpactY()
         raise ValueError("Unknown attack field: %s" % field)
 
     @staticmethod
     def get_hit_area_field(hit_area_data, field):
-        if field == 'top': return hit_area_data.getT()
-        if field == 'bottom': return hit_area_data.getB()
-        if field == 'left': return hit_area_data.getL()
-        if field == 'right': return hit_area_data.getR()
+        if field == 'top':
+            return hit_area_data.getT()
+        if field == 'bottom':
+            return hit_area_data.getB()
+        if field == 'left':
+            return hit_area_data.getL()
+        if field == 'right':
+            return hit_area_data.getR()
         raise ValueError("Unknown hit area field: %s" % field)
 
     @lru_cache(maxsize=None)
     def get_feature(self, feature):
-        fd = self.frame_data # shorthand
+        fd = self.frame_data  # shorthand
 
         if self.max_hp is None and not isinstance(fd, dict):
             self.max_hp = {'P1': fd.getP1().getMaxHp(), 'P2': fd.getP2().getMaxHp()}
 
+        # current frame
+        match = re.match(
+            r'^(current_frame|elapsed_milli_time)$',
+            feature
+        )
+        if match:
+            current_frame = match.group(1)
+            if isinstance(fd, dict):
+                return fd[current_frame]
+
         # feature of a player
         match = re.match(
-            r'^(P1|P2).(front|remaining_frames|action|action_id|state|state_id|hp|energy|x|y|speed_x|speed_y|left|right|top|bottom)$',
+            r'^(P1|P2).(front|remaining_frames|action|action_id|state|state_id|hp|energy'
+            r'|x|y|speed_x|speed_y|left|right|top|bottom|key_a|key_b|key_c|key_up|key_down|key_left|key_right)$',
             feature
         )
         if match:
             player = match.group(1)
             field = match.group(2)
-            
+
             if isinstance(fd, dict):
                 return fd[player][field]
             else:
@@ -234,11 +280,10 @@ class FightingFeaturesExtractor:
                 return fd[player]['projectiles'][projectile_index]['hit_area'][field]
             else:
                 projectiles = fd.getProjectilesByP1() if player == 'P2' else fd.getProjectilesByP2()
-                return FightingFeaturesExtractor.get_hit_area_field(projectiles[projectile_index].getHitAreaNow(), field)
+                return FightingFeaturesExtractor.get_hit_area_field(projectiles[projectile_index].getHitAreaNow(),
+                                                                    field)
 
         raise ValueError("Unknown feature: %s" % feature)
-
-
 
     def get_special(self, special, player):
 
@@ -253,21 +298,21 @@ class FightingFeaturesExtractor:
             if player_l > opponent_r or player_r < opponent_l:
                 value = min(abs(player_r - opponent_l), abs(player_l - opponent_r))
                 if value == 0:
-                    return None  # bounding boxes have overlapping y coordinates (map to special value None)
+                    return 0  # bounding boxes have overlapping y coordinates (map to special value None)
                 else:
                     return discretize_intervals(value, thresholds=[100, 300]) if self.discretize else value
             else:
-                return None # bounding boxes have overlapping x coordinates (map to special value None)
+                return 0  # bounding boxes have overlapping x coordinates (map to special value None)
 
         elif special == 'players_x_diff()':
-            player_x = self.get_feature('%s.x' % player)
-            opponent_x = self.get_feature('%s.x' % opponent)
+            player_x = self.get_feature('%s.left' % player)
+            opponent_x = self.get_feature('%s.left' % opponent)
             value = abs(player_x - opponent_x)
             return discretize_intervals(value, thresholds=[90, 150, 300]) if self.discretize else value
 
         elif special == 'players_y_diff()':
-            player_y = self.get_feature('%s.y' % player)
-            opponent_y = self.get_feature('%s.y' % opponent)
+            player_y = self.get_feature('%s.top' % player)
+            opponent_y = self.get_feature('%s.top' % opponent)
             value = player_y - opponent_y
             if value >= 0:
                 return discretize_intervals(value, thresholds=[30, 90, 150]) if self.discretize else value
@@ -285,11 +330,19 @@ class FightingFeaturesExtractor:
             opponent_above_by = player_t - opponent_b
 
             if player_above_by > 0:
-                return discretize_intervals(player_above_by, thresholds=[150]) if self.discretize else player_above_by
+                return discretize_intervals(player_above_by, thresholds=[150]) \
+                    if self.discretize else player_above_by
             elif opponent_above_by > 0:
-                return discretize_intervals(-opponent_above_by, thresholds=[150]) if self.discretize else -opponent_above_by
+                return discretize_intervals(-opponent_above_by, thresholds=[150]) \
+                    if self.discretize else -opponent_above_by
             else:
-                return None  # bounding boxes have overlapping y coordinates (map to special value None)
+                return 0  # bounding boxes have overlapping y coordinates (map to special value None)
+
+        elif special == 'hp_diff()':
+            player_health = self.get_feature('%s.hp' % player)
+            opponent_health = self.get_feature('%s.hp' % opponent)
+
+            return player_health - opponent_health
 
         elif special == 'player_is_falling()':
             player_speed_y = self.get_feature('%s.speed_y' % player)
@@ -300,10 +353,15 @@ class FightingFeaturesExtractor:
             return sign(opponent_speed_y)
 
         elif special == 'opponent_is_approaching()':
-            player_x = self.get_feature('%s.x' % player)
-            opponent_x = self.get_feature('%s.x' % opponent)
+            player_x = self.get_feature('%s.left' % player)
+            opponent_x = self.get_feature('%s.left' % opponent)
             opponent_speed_x = self.get_feature('%s.speed_x' % opponent)
-            return sign(player_x - opponent_x) == sign(opponent_speed_x)
+            if opponent_speed_x == 0:
+                return 0
+            elif sign(player_x - opponent_x) == sign(opponent_speed_x):
+                return 1
+            else:
+                return -1
 
         elif special == 'opponent_is_attacking()':
             att_type = self.get_feature('%s.attack.attack_type_id' % opponent)
@@ -314,7 +372,7 @@ class FightingFeaturesExtractor:
             player_r = self.get_feature('%s.right' % player)
             player_t = self.get_feature('%s.top' % player)
             player_b = self.get_feature('%s.bottom' % player)
-            threats_distance = [] # type: List[int]
+            threats_distance = []  # type: List[int]
 
             att_type = self.get_feature('%s.attack.attack_type_id' % opponent)
             if att_type is not None and att_type != 0:
@@ -337,39 +395,53 @@ class FightingFeaturesExtractor:
             if threats_distance:
                 value = min(threats_distance) + 1
                 if value == 0:
-                    return 0 # threat is overlapping (map to closest interval, 0)
+                    return 0  # threat is overlapping (map to closest interval, 0)
                 else:
                     return discretize_intervals(value, thresholds=[100, 150]) if self.discretize else value
             else:
-                return None # there are no threats (map to special value None)
+                return 0  # there are no threats (map to special value None)
 
         elif special == 'attack_x_distance()':
             player_l = self.get_feature('%s.left' % player)
             player_r = self.get_feature('%s.right' % player)
-            player_t = self.get_feature('%s.top' % player)
-            player_b = self.get_feature('%s.bottom' % player)
 
             att_type = self.get_feature('%s.attack.attack_type_id' % opponent)
             if att_type is not None and att_type != 0:
                 att_l = self.get_feature('%s.attack.hit_area.left' % opponent)
                 att_r = self.get_feature('%s.attack.hit_area.right' % opponent)
+                value = min(abs(player_r - att_l), abs(player_l - att_r))
+                if value == 0:
+                    return 0  # threat is overlapping (map to closest interval, 0)
+                else:
+                    return discretize_intervals(value, thresholds=[100, 150]) if self.discretize else value
+            else:
+                return 0  # there are no threats (map to special value None)
+
+        elif special == 'attack_y_distance()':
+            player_t = self.get_feature('%s.top' % player)
+            player_b = self.get_feature('%s.bottom' % player)
+
+            att_type = self.get_feature('%s.attack.attack_type_id' % opponent)
+            if att_type is not None and att_type != 0:
                 att_t = self.get_feature('%s.attack.hit_area.top' % opponent)
                 att_b = self.get_feature('%s.attack.hit_area.bottom' % opponent)
-                if player_t <= att_b <= player_b or player_t <= att_t <= player_b:
-                    value = min(abs(player_r - att_l), abs(player_l - att_r)) + 1
-                    if value == 0:
-                        return 0 # threat is overlapping (map to closest interval, 0)
-                    else:
-                        return discretize_intervals(value, thresholds=[100, 150]) if self.discretize else value
-            else:
-                return None # there are no threats (map to special value None)
 
-        elif special == 'closest_projectile_x_distance()':
+                if player_t <= att_t <= player_b or player_t <= att_b <= player_b:
+                    return 0  # the bounding box is overlapped
+                else:
+                    value = min(abs(player_t - att_b), abs(att_t - player_b))
+                    return discretize_intervals(value, thresholds=[100, 150]) if self.discretize else value
+            else:
+                return 0  # there are no threats (map to special value None)
+
+        elif special == 'closest_projectile_info()':
             player_l = self.get_feature('%s.left' % player)
             player_r = self.get_feature('%s.right' % player)
             player_t = self.get_feature('%s.top' % player)
             player_b = self.get_feature('%s.bottom' % player)
-            projectiles_distance = [] # type: List[int]
+            closest_distance = 1000
+            closest_y_distance = 1000
+            closest_proj_idx = 1000
 
             n_proj = self.get_feature('%s.projectiles.count' % opponent)
             for proj_i in range(n_proj):
@@ -377,21 +449,40 @@ class FightingFeaturesExtractor:
                 proj_r = self.get_feature('%s.projectiles[%d].hit_area.right' % (opponent, proj_i))
                 proj_t = self.get_feature('%s.projectiles[%d].hit_area.top' % (opponent, proj_i))
                 proj_b = self.get_feature('%s.projectiles[%d].hit_area.bottom' % (opponent, proj_i))
-                if player_t <= proj_b <= player_b or player_t <= proj_t <= player_b:
-                    projectiles_distance.append(min(abs(player_r - proj_l), abs(player_l - proj_r)))
+                proj_distance = min(abs(player_r - proj_l), abs(player_l - proj_r))
+                if proj_distance < closest_distance:
+                    if player_t <= proj_b <= player_b or player_t <= proj_t <= player_b:
+                        closest_y_distance = 0
+                    else:
+                        closest_y_distance = min(abs(player_t - proj_b), abs(proj_t - player_b))
+                    closest_distance = proj_distance
+                    closest_proj_idx = proj_i
 
-            if projectiles_distance:
-                value = min(projectiles_distance) + 1
-                if value == 0:
-                    return 0 # threat is overlapping (map to closest interval, 0)
-                else:
-                    return discretize_intervals(value, thresholds=[100, 150]) if self.discretize else value
+            if closest_distance < 1000:
+                closest_proj_type = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].attack_type_id')
+                closest_proj_speed_x = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].speed_x')
+                closest_proj_speed_y = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].speed_y')
+                closest_proj_damage = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].hit_damage')
+                closest_proj_guard_damage = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].guard_damage')
+                closest_proj_impact_x = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].impact_x')
+                closest_proj_impact_y = self.get_feature(f'{opponent}.projectiles[{closest_proj_idx}].impact_y')
+                closest_proj_distance_x = closest_distance
+                closest_proj_distance_y = closest_y_distance
+                return n_proj, closest_proj_type, closest_proj_speed_x, closest_proj_speed_y, closest_proj_damage, \
+                       closest_proj_guard_damage, closest_proj_impact_x, closest_proj_impact_y,\
+                       closest_proj_distance_x, closest_proj_distance_y
             else:
-                return None # there are no threats (map to special value None)
+                return 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  # there are no threats (map to special value None)
 
         elif special == 'opponent_is_busy()':
             opp_rem_fr = self.get_feature('%s.remaining_frames' % opponent)
             return opp_rem_fr > 0
+
+        # TODO: implement later
+        elif special == 'available_actions_mask()':
+            import pandas as pd
+            motion_file = pd.read_csv('./const/Motion.csv', 'r')
+            current_action = self.get_feature(f'{player}.action_id')
 
         else:
             raise ValueError("Unknown special feature: %s" % special)
@@ -402,7 +493,6 @@ class FightingFeaturesExtractor:
     def set_frame_data(self, frame_data):
         self.clear_cache()
         self.frame_data = frame_data
-
 
     def get_features(self, frame_data, player):
         """
@@ -428,10 +518,6 @@ class FightingFeaturesExtractor:
                     values[feature] = discretize_intervals(values[feature], thresholds=[5, 50, 300])
         return values
 
-
-
-
-
     def get_features_info(self, features: List[str]):
         """
         Extracts all the wanted features from the game state. Features list is
@@ -440,11 +526,11 @@ class FightingFeaturesExtractor:
         """
         return {f: self.get_feature_info(f) for f in features}
 
-
     def get_feature_info(self, feature):
 
         match = re.match(
-            r'^(?:P1|P2|self|opponent).(remaining_frames|action|action_id|state|state_id|hp|energy|x|y|speed_x|speed_y|left|right|top|bottom)$',
+            r'^(?:P1|P2|self|opponent).(remaining_frames|action|action_id|state|state_id|hp|energy|'
+            r'x|y|speed_x|speed_y|left|right|top|bottom)$',
             feature
         )
         if match:
@@ -452,26 +538,32 @@ class FightingFeaturesExtractor:
             if player_feature == 'remaining_frames':
                 return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 3615}
             elif player_feature == 'action':
-                return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': ALL_ACTIONS}
+                return {'iterable': False, 'nullable': False, 'type': 'enum',
+                        'possible_values': ALL_ACTIONS}
             elif player_feature == 'action_id':
-                return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': list(range(len(ALL_ACTIONS)))}
+                return {'iterable': False, 'nullable': False, 'type': 'enum',
+                        'possible_values': list(range(len(ALL_ACTIONS)))}
             elif player_feature == 'state':
-                return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': ['STAND', 'CROUCH', 'AIR', 'DOWN']}
+                return {'iterable': False, 'nullable': False, 'type': 'enum',
+                        'possible_values': ['STAND', 'CROUCH', 'AIR', 'DOWN']}
             elif player_feature == 'state_id':
-                return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': list(range(4))}
+                return {'iterable': False, 'nullable': False, 'type': 'enum',
+                        'possible_values': list(range(4))}
             elif player_feature == 'hp':
                 max_hp = max(self.max_hp)
-                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0 if max_hp > 0 else -1000, 'max': max_hp if max_hp > 0 else 0}  # FIXME this is a guess
+                return {'iterable': False, 'nullable': False, 'type': int,
+                        'min': 0 if max_hp > 0 else -1000, 'max': max_hp if max_hp > 0 else 0}  # FIXME this is a guess
             elif player_feature == 'energy':
-                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 1000} # FIXME this is a guess
+                return {'iterable': False, 'nullable': False, 'type': int,
+                        'min': 0, 'max': 1000}  # FIXME this is a guess
             elif player_feature == 'x':
                 return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': self.stage_size['x']}
             elif player_feature == 'y':
                 return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': self.stage_size['y'] * 1.5}
-            elif player_feature == 'speed_x':
-                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 500} # FIXME this is a guess
-            elif player_feature == 'speed_y':
-                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 500} # FIXME this is a guess
+            elif player_feature == 'speed_x':  # FIXME this is a guess
+                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 500}
+            elif player_feature == 'speed_y':  # FIXME this is a guess
+                return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': 500}
             elif player_feature == 'left':
                 return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': self.stage_size['x']}
             elif player_feature == 'right':
@@ -497,29 +589,41 @@ class FightingFeaturesExtractor:
         if match1 or match2:
             attack_feature = match1.group(1) if match1 else match2.group(1)
             if attack_feature == 'speed_x':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 500} # FIXME this is a guess
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 500}  # FIXME this is a guess
             elif attack_feature == 'speed_y':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 500} # FIXME this is a guess
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 500}  # FIXME this is a guess
             elif attack_feature == 'hit_damage':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 300}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 300}
             elif attack_feature == 'guard_damage':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 100}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 100}
             elif attack_feature == 'start_add_energy':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': -300, 'max': 0}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': -300, 'max': 0}
             elif attack_feature == 'hit_add_energy':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 50}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 50}
             elif attack_feature == 'guard_add_energy':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 30}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 30}
             elif attack_feature == 'give_energy':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 60}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 60}
             elif attack_feature == 'give_guard_recov':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 30}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 30}
             elif attack_feature == 'attack_type':
-                return {'iterable': False, 'nullable': bool(match1), 'type': 'enum', 'possible_values': list(range(4))}
+                return {'iterable': False, 'nullable': bool(match1), 'type': 'enum',
+                        'possible_values': list(range(4))}
             elif attack_feature == 'impact_x':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': 30}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': 30}
             elif attack_feature == 'impact_y':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': -20, 'max': 0}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': -20, 'max': 0}
             else:
                 raise ValueError("Unknown feature: %s" % feature)
 
@@ -538,9 +642,11 @@ class FightingFeaturesExtractor:
             elif hit_area_feature == 'right':
                 return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': self.stage_size['x']}
             elif hit_area_feature == 'top':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': self.stage_size['y'] * 1.5}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': self.stage_size['y'] * 1.5}
             elif hit_area_feature == 'bottom':
-                return {'iterable': False, 'nullable': bool(match1), 'type': int, 'min': 0, 'max': self.stage_size['y'] * 1.5}
+                return {'iterable': False, 'nullable': bool(match1), 'type': int,
+                        'min': 0, 'max': self.stage_size['y'] * 1.5}
 
         match = re.match(
             r'^(?:P1|P2|self|opponent).projectiles.count$',
@@ -554,9 +660,11 @@ class FightingFeaturesExtractor:
         if feature == 'players_x_diff()':
             return {'iterable': False, 'nullable': False, 'type': int, 'min': 0, 'max': self.stage_size['x']}
         if feature == 'players_y_distance()':
-            return {'iterable': False, 'nullable': False, 'type': int, 'min': -self.stage_size['y'] * 1.5, 'max': self.stage_size['y'] * 1.5}
+            return {'iterable': False, 'nullable': False, 'type': int,
+                    'min': -self.stage_size['y'] * 1.5, 'max': self.stage_size['y'] * 1.5}
         if feature == 'players_y_diff()':
-            return {'iterable': False, 'nullable': False, 'type': int, 'min': -self.stage_size['y'] * 1.5, 'max': self.stage_size['y'] * 1.5}
+            return {'iterable': False, 'nullable': False, 'type': int,
+                    'min': -self.stage_size['y'] * 1.5, 'max': self.stage_size['y'] * 1.5}
         if feature == 'player_is_falling()':
             return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': [-1, 0, +1]}
         if feature == 'opponent_is_falling()':
@@ -575,8 +683,6 @@ class FightingFeaturesExtractor:
             return {'iterable': False, 'nullable': False, 'type': 'enum', 'possible_values': [True, False]}
 
         raise ValueError("Unknown feature %s" % feature)
-
-
 
 
 def discretize_intervals(value: Optional[float], thresholds: List[float]):

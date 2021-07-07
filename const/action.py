@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Action(Enum):
     NEUTRAL = 'NEUTRAL'
     STAND = 'STAND'
@@ -64,67 +65,66 @@ class Action(Enum):
 
     @staticmethod
     def to_ordinal(action):
+        if action == Action.NEUTRAL: return 0
+        if action == Action.STAND: return 1
+        if action == Action.FORWARD_WALK: return 2
+        if action == Action.DASH: return 3
+        if action == Action.BACK_STEP: return 4
+        if action == Action.CROUCH: return 5
+        if action == Action.JUMP: return 6
+        if action == Action.FOR_JUMP: return 7
+        if action == Action.BACK_JUMP: return 8
+        if action == Action.AIR: return 9
+        if action == Action.STAND_GUARD: return 10
+        if action == Action.CROUCH_GUARD: return 11
+        if action == Action.AIR_GUARD: return 12
+        if action == Action.STAND_GUARD_RECOV: return 13
+        if action == Action.CROUCH_GUARD_RECOV: return 14
+        if action == Action.AIR_GUARD_RECOV: return 15
+        if action == Action.STAND_RECOV: return 16
+        if action == Action.CROUCH_RECOV: return 17
+        if action == Action.AIR_RECOV: return 18
+        if action == Action.CHANGE_DOWN: return 19
+        if action == Action.DOWN: return 20
+        if action == Action.RISE: return 21
+        if action == Action.LANDING: return 22
 
-        if action == Action.NEUTRAL: return 1
-        if action == Action.STAND: return 2
-        if action == Action.FORWARD_WALK: return 3
-        if action == Action.DASH: return 4
-        if action == Action.BACK_STEP: return 5
-        if action == Action.CROUCH: return 6
-        if action == Action.JUMP: return 7
-        if action == Action.FOR_JUMP: return 8
-        if action == Action.BACK_JUMP: return 9
-        if action == Action.AIR: return 10
-        if action == Action.STAND_GUARD: return 11
-        if action == Action.CROUCH_GUARD: return 12
-        if action == Action.AIR_GUARD: return 13
-        if action == Action.STAND_GUARD_RECOV: return 14
-        if action == Action.CROUCH_GUARD_RECOV: return 15
-        if action == Action.AIR_GUARD_RECOV: return 16
-        if action == Action.STAND_RECOV: return 17
-        if action == Action.CROUCH_RECOV: return 18
-        if action == Action.AIR_RECOV: return 19
-        if action == Action.CHANGE_DOWN: return 20
-        if action == Action.DOWN: return 21
-        if action == Action.RISE: return 22
-        if action == Action.LANDING: return 23
+        if action == Action.THROW_A: return 23
+        if action == Action.THROW_B: return 24
+        if action == Action.THROW_HIT: return 25
+        if action == Action.THROW_SUFFER: return 26
 
-        if action == Action.THROW_A: return 24
-        if action == Action.THROW_B: return 25
-        if action == Action.THROW_HIT: return 26
-        if action == Action.THROW_SUFFER: return 27
+        if action == Action.STAND_A: return 27
+        if action == Action.STAND_B: return 28
+        if action == Action.CROUCH_A: return 29
+        if action == Action.CROUCH_B: return 30
+        if action == Action.AIR_A: return 31
+        if action == Action.AIR_B: return 32
+        if action == Action.AIR_DA: return 33
+        if action == Action.AIR_DB: return 34
+        if action == Action.STAND_FA: return 35
+        if action == Action.STAND_FB: return 36
+        if action == Action.CROUCH_FA: return 37
+        if action == Action.CROUCH_FB: return 38
+        if action == Action.AIR_FA: return 39
+        if action == Action.AIR_FB: return 40
+        if action == Action.AIR_UA: return 41
+        if action == Action.AIR_UB: return 42
 
-        if action == Action.STAND_A: return 28
-        if action == Action.STAND_B: return 29
-        if action == Action.CROUCH_A: return 30
-        if action == Action.CROUCH_B: return 31
-        if action == Action.AIR_A: return 32
-        if action == Action.AIR_B: return 33
-        if action == Action.AIR_DA: return 34
-        if action == Action.AIR_DB: return 35
-        if action == Action.STAND_FA: return 36
-        if action == Action.STAND_FB: return 37
-        if action == Action.CROUCH_FA: return 38
-        if action == Action.CROUCH_FB: return 39
-        if action == Action.AIR_FA: return 40
-        if action == Action.AIR_FB: return 41
-        if action == Action.AIR_UA: return 42
-        if action == Action.AIR_UB: return 43
+        if action == Action.STAND_D_DF_FA: return 43
+        if action == Action.STAND_D_DF_FB: return 44
+        if action == Action.STAND_F_D_DFA: return 45
+        if action == Action.STAND_F_D_DFB: return 46
+        if action == Action.STAND_D_DB_BA: return 47
+        if action == Action.STAND_D_DB_BB: return 48
+        if action == Action.AIR_D_DF_FA: return 49
+        if action == Action.AIR_D_DF_FB: return 50
+        if action == Action.AIR_F_D_DFA: return 51
+        if action == Action.AIR_F_D_DFB: return 52
+        if action == Action.AIR_D_DB_BA: return 53
+        if action == Action.AIR_D_DB_BB: return 54
 
-        if action == Action.STAND_D_DF_FA: return 44
-        if action == Action.STAND_D_DF_FB: return 45
-        if action == Action.STAND_F_D_DFA: return 46
-        if action == Action.STAND_F_D_DFB: return 47
-        if action == Action.STAND_D_DB_BA: return 48
-        if action == Action.STAND_D_DB_BB: return 49
-        if action == Action.AIR_D_DF_FA: return 50
-        if action == Action.AIR_D_DF_FB: return 51
-        if action == Action.AIR_F_D_DFA: return 52
-        if action == Action.AIR_F_D_DFB: return 53
-        if action == Action.AIR_D_DB_BA: return 54
-        if action == Action.AIR_D_DB_BB: return 55
-
-        if action == Action.STAND_D_DF_FC: return 56
+        if action == Action.STAND_D_DF_FC: return 55
 
 USELESS_ACTIONS = [
     Action.STAND,
