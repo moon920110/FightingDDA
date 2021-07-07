@@ -1,13 +1,15 @@
 import json
-from features_extractor import FightingFeaturesExtractor
+from utils.features_extractor import FightingFeaturesExtractor
 
 #Load the JSON log
-path = "HPMode_HaibuAI_LGIST_Bot_2021.07.01-08.59.35.json"
+path = "D:\\DDA\\GAME_LOG\\league_replay\\HPMode_BCP_ReiwaThunder_2021.06.30-20.03.13.json"
 with open(path, 'r') as f:
     data = json.load(f)
+    print(json.dumps(data['rounds'][1], indent=4))
+    exit()
 
 # Construct a new object by passing a list of the desired features (this is used later to retrieve the features in bulk).
-fe = FightingFeaturesExtractor(['P1.attack.hit_area.bottom','players_distance()'])
+fe = FightingFeaturesExtractor(['P1.attack.hit_area.bottom', 'players_distance()'])
 
 # Inform the features extractor of the game data.
 fe.set_game_data(data)
@@ -28,6 +30,7 @@ for round_data in data['rounds']:
         fe.set_frame_data(frame_data)
 
         # Get a feature: use a name with dotted notation and call the method get_feature().
+        print('P1 front: ', fe.get_feature('P1.front'))
         print('P1 state: : %s' % fe.get_feature('P1.state'))
         print('P2 remaining frames: %s' % fe.get_feature('P2.remaining_frames'))
         print('P2 hit-area bottom: %s' % fe.get_feature('P2.bottom'))
