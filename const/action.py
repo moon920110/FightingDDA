@@ -2,8 +2,11 @@ from enum import Enum
 
 
 class Action(Enum):
+    # state
     NEUTRAL = 'NEUTRAL'
     STAND = 'STAND'
+
+    # move
     FORWARD_WALK = 'FORWARD_WALK'
     DASH = 'DASH'
     BACK_STEP = 'BACK_STEP'
@@ -11,26 +14,36 @@ class Action(Enum):
     JUMP = 'JUMP'
     FOR_JUMP = 'FOR_JUMP'
     BACK_JUMP = 'BACK_JUMP'
+
+    # state
     AIR = 'AIR'
+
+    # guard
     STAND_GUARD = 'STAND_GUARD'
     CROUCH_GUARD = 'CROUCH_GUARD'
     AIR_GUARD = 'AIR_GUARD'
+
+    # out of control
     STAND_GUARD_RECOV = 'STAND_GUARD_RECOV'
     CROUCH_GUARD_RECOV = 'CROUCH_GUARD_RECOV'
     AIR_GUARD_RECOV = 'AIR_GUARD_RECOV'
     STAND_RECOV = 'STAND_RECOV'
     CROUCH_RECOV = 'CROUCH_RECOV'
     AIR_RECOV = 'AIR_RECOV'
+
+    # state
     CHANGE_DOWN = 'CHANGE_DOWN'
     DOWN = 'DOWN'
     RISE = 'RISE'
     LANDING = 'LANDING'
 
+    # normal attack
     THROW_A = 'THROW_A'
     THROW_B = 'THROW_B'
     THROW_HIT = 'THROW_HIT'
     THROW_SUFFER = 'THROW_SUFFER'
 
+    # normal attack
     STAND_A = 'STAND_A'
     STAND_B = 'STAND_B'
     CROUCH_A = 'CROUCH_A'
@@ -48,6 +61,7 @@ class Action(Enum):
     AIR_UA = 'AIR_UA'
     AIR_UB = 'AIR_UB'
 
+    # special attack
     STAND_D_DF_FA = 'STAND_D_DF_FA'
     STAND_D_DF_FB = 'STAND_D_DF_FB'
     STAND_F_D_DFA = 'STAND_F_D_DFA'
@@ -60,8 +74,37 @@ class Action(Enum):
     AIR_F_D_DFB = 'AIR_F_D_DFB'
     AIR_D_DB_BA = 'AIR_D_DB_BA'
     AIR_D_DB_BB = 'AIR_D_DB_BB'
-
     STAND_D_DF_FC = 'STAND_D_DF_FC'
+
+    @staticmethod
+    def to_group(action_num):
+        if action_num < 2 or action_num == 9 or 19 <= action_num < 23:  # state
+            return 0
+        elif 2 <= action_num < 9:  # move
+            return 1
+        elif 13 <= action_num < 19:  # recovery
+            return 2
+        elif 23 <= action_num < 43:  # normal attack
+            return 3
+        elif 43 <= action_num:  # special attack
+            return 4
+        else:  # guard
+            return 5
+
+    @staticmethod
+    def group_to_string(group_num):
+        if group_num == 0:
+            return 'STATE'
+        elif group_num == 1:
+            return 'MOVE'
+        elif group_num == 2:
+            return 'OUT_OF_CONTROL'
+        elif group_num == 3:
+            return 'NORMAL_ATTACK'
+        elif group_num == 4:
+            return 'SPECIAL_ATTACK'
+        else:
+            return 'GUARD'
 
     @staticmethod
     def to_ordinal(action):
